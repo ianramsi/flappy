@@ -82,5 +82,78 @@ function update() {
         let pipe = pipeArray[r];
         pipe.x += velocityX;
         context.drawImage(pipe.img, pipe.x, pipe.y, pipe.width, pipe.heigth);
+
+        if(!pipe.passed && bird.x > pipe.x + pipe.width){
+            score += 0.5; //0.5 because of two pipes top & bottom. 0.5 x 2 = 1
+            pipe.passed = true;
+        }
+        if(detectCollission(bird,pipe)){
+            gameOver = true;
+        }
+    }
+    //clear pipes
+    while(pipeArray.length > 0 && pipeArray[0].x < -pipeWidth) {
+        pipeArray.shift(); //removes the first element of from array
+    }
+
+    //scores
+    context.fillStyle = "white";
+    context.font = "45px sans-serif";
+    context.fillText(score,5,45);
+
+    if(gameOver) {
+        context.fillText ("Game Over",5,90);
     }
 }
+
+function detectCollission(a,b) {
+    return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner
+           a.x + a.width > b.x &&   //a's top right corner passes b's top left corner
+           a.y < b.y + b.height &&  //a's top left corner doesn't reach b's bottom left corner
+           a.y + a.height > b.y;    //a's bottom left corner passes b's top left corner
+}
+
+function placePipes() {
+    if(gameOver) {
+        return;
+    }
+
+    let randomPipeY = pipeY - pipeHeigth/4 - Math.random()*(pipeHeigth/2);
+    let openingSpace = board.height/4;
+
+    let topPipe = {
+        img : topPipeImg,
+        x : pipeX,
+        y : randomPipeY,
+        widht : pipeWidth,
+        heigth : pipeHeigth,
+        passed : false
+    }
+    pipeArray.push(topPipe);
+
+    let bottomPipe = {
+        img : bottomPipeImg,
+        x : pipeX,
+        y : randomPipeY + pipeHeigth + openingSpace,
+        widht : pipeWidth,
+        height : pipeHeigth,
+        passed : false
+    }
+    pipeArray.push(bottomPipe);    
+}
+
+function moveBird(e) {
+    if(e.code == "ArrowUp" || e.code == "Space" || e.code == "KeyX") {
+        //jump
+        velocityY = -6;
+
+           //reset the game
+        if(gameOver) {
+            bird.y = birdY;
+            pipeArray = [];
+            score = 0;
+            gameOver = false;
+        }
+    }
+}
+
