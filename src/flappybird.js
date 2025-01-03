@@ -82,9 +82,10 @@ function update() {
     velocityY += gravity;
     bird.y = Math.max(bird.y + velocityY , 0)//apply gravity to the bird, limit the bird.y (vertical) to top of canvas
     context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
-
     if (bird.y > board.height){
         gameOver = true;
+        dieSound.play(); // Add this line
+    }
     }
 
     //pipes
@@ -94,11 +95,13 @@ function update() {
         context.drawImage(pipe.img, pipe.x, pipe.y, pipe.width, pipe.height);
 
         if(!pipe.passed && bird.x > pipe.x + pipe.width){
-            score += 0.5; //0.5 because of two pipes top & bottom. 0.5 x 2 = 1
+            score += 0.5;
             pipe.passed = true;
+            pointSound.play(); // Add this line
         }
         if(detectCollision(bird,pipe)){
             gameOver = true;
+            hitSound.play(); // Add this line
         }
     }
     //clear pipes
@@ -170,3 +173,8 @@ function moveBird(e) {
         }
     }
 }
+
+//sound
+let dieSound = new Audio('assets/sfx_die.wav');
+let pointSound = new Audio('assets/sfx_point.wav');
+let hitSound = new Audio('assets/sfx_hit.wav');
