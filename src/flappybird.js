@@ -1,13 +1,16 @@
 //board
 let board;
 let boardWidth = 360;
-// Changed: Fixed typo from 'boardHeigth' to 'boardHeight'
 let boardHeight = 640;
 let context;
 
+//sound
+let dieSound = new Audio('assets/sfx_die.wav');
+let pointSound = new Audio('assets/sfx_point.wav');
+let hitSound = new Audio('assets/sfx_hit.wav');
+
 //bird
 let birdWidth = 34;
-// Changed: Fixed typo from 'birdHeigth' to 'birdHeight'
 let birdHeight = 24;
 let birdX = boardWidth/2;
 let birdY = boardHeight/2;
@@ -17,14 +20,12 @@ let bird = {
     x : birdX,
     y : birdY,
     width : birdWidth,
-    // Changed: Fixed typo from 'heigth' to 'height'
     height : birdHeight
 }
 
 //pipes
 let pipeArray = [];
 let pipeWidth = 64;
-// Changed: Fixed typo from 'pipeHeigth' to 'pipeHeight'
 let pipeHeight = 512;
 let pipeX = boardWidth;
 let pipeY = 0;
@@ -39,8 +40,6 @@ let score = 0;
 let velocityX = -2; //pipe moving to left screen with speed 2
 let velocityY = 0; //bird jump speed
 let gravity = 0.3; //speed of the bird go down
-
-
 window.onload = function() {
     board = document.getElementById("board");
     board.width = boardWidth;
@@ -86,7 +85,6 @@ function update() {
         gameOver = true;
         dieSound.play(); // sound when bird dies
     }
-    }
 
     //pipes
     for (let r = 0; r < pipeArray.length; r++) {
@@ -115,15 +113,22 @@ function update() {
     context.fillText(score,5,45);
 
     if(gameOver) {
-        context.fillText ("Game Over",5,90);
+        context.fillText("Game Over", boardWidth/2 - 80, boardHeight/2);
+        context.fillText("Press Space to Restart", boardWidth/2 - 140, boardHeight/2 + 50);
+        return;
     }
 }
 
-function detectCollision(a,b) {
-    return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner
-           a.x + a.width > b.x &&   //a's top right corner passes b's top left corner
-           a.y < b.y + b.height &&  //a's top left corner doesn't reach b's bottom left corner
-           a.y + a.height > b.y;    //a's bottom left corner passes b's top left corner
+// Collision detection function
+function detectCollision(a, b) {
+    // More precise collision detection with padding
+    const padding = 5;
+    return (
+        a.x + padding < b.x + b.width - padding &&
+        a.x + a.width - padding > b.x + padding &&
+        a.y + padding < b.y + b.height - padding &&
+        a.y + a.height - padding > b.y + padding
+    );
 }
 
 function placePipes() {
@@ -166,15 +171,13 @@ function moveBird(e) {
 
            //reset the game
         if(gameOver) {
+            // Reset game state
             bird.y = birdY;
+            velocityY = 0;
             pipeArray = [];
             score = 0;
             gameOver = false;
+            context.clearRect(0, 0, board.width, board.height);
         }
     }
 }
-
-//sound
-let dieSound = new Audio('assets/sfx_die.wav');
-let pointSound = new Audio('assets/sfx_point.wav');
-let hitSound = new Audio('assets/sfx_hit.wav');
