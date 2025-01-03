@@ -84,7 +84,7 @@ function update() {
     context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
     if (bird.y > board.height){
         gameOver = true;
-        dieSound.play(); // Add this line
+        dieSound.play(); // sound when bird dies
     }
     }
 
@@ -97,11 +97,11 @@ function update() {
         if(!pipe.passed && bird.x > pipe.x + pipe.width){
             score += 0.5;
             pipe.passed = true;
-            pointSound.play(); // Add this line
+            pointSound.play(); // sound when bird pass the pipe
         }
         if(detectCollision(bird,pipe)){
             gameOver = true;
-            hitSound.play(); // Add this line
+            hitSound.play(); // sound when bird hits the pipe
         }
     }
     //clear pipes
